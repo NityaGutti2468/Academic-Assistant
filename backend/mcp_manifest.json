@@ -1,0 +1,57 @@
+{
+  "name": "college-academic-agent-system",
+  "version": "0.1.0",
+  "description": "MCP-style manifest for a multi-agent academic assistant.",
+  "resources": [
+    {
+      "name": "MongoDB college_ai",
+      "type": "database",
+      "collections": [
+        "students",
+        "attendance",
+        "marks",
+        "academic_summary",
+        "fees",
+        "alert_logs",
+        "mentors"
+      ]
+    },
+    {
+      "name": "Flask REST API",
+      "type": "api",
+      "base_url": "http://127.0.0.1:5000"
+    },
+    {
+      "name": "Project files",
+      "type": "filesystem",
+      "paths": [
+        "backend/",
+        "frontend/",
+        "database/",
+        "docs/"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "get_student_attendance",
+      "agent": "attendance_agent",
+      "description": "Fetch attendance percentage and status for a student."
+    },
+    {
+      "name": "get_academic_report",
+      "agent": "academic_agent",
+      "description": "Fetch marks, SGPA, CGPA, backlog status, and performance insights."
+    },
+    {
+      "name": "get_student_fees",
+      "agent": "fees_agent",
+      "description": "Fetch pending fees, due dates, and late penalties."
+    },
+    {
+      "name": "mentor_overview",
+      "agent": "mentor_agent",
+      "description": "Fetch mentor-facing student and alert summaries."
+    }
+  ]
+}

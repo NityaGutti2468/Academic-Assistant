@@ -1,0 +1,39 @@
+/* Restored structural CSS */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; }
+.container {
+    width: 600px;
+    background: rgba(30, 30, 30, 0.8);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+}
+header { margin-bottom: 20px; }
+.logo { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.orb { width: 16px; height: 16px; background: cyan; border-radius: 50%; box-shadow: 0 0 10px cyan; }
+.mic-btn {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin: 20px 0;
+}
+.mic-btn.active { color: #ff4444; }
+.ai-visualizer { position: relative; width: 80px; height: 80px; margin: 0 auto; }
+.ring { position: absolute; border: 2px solid cyan; border-radius: 50%; width: 100%; height: 100%; opacity: 0.3;}
+.transcript-box { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+.response-box { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; text-align: left; border: 1px solid rgba(255,255,255,0.2); }
+.agent-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; color: cyan; }
+.dot { width: 10px; height: 10px; background: cyan; border-radius: 50%; }
+.data-card { background: rgba(255,255,255,0.1); padding: 10px; margin-bottom: 5px; border-radius: 5px; }
