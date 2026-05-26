@@ -32,7 +32,7 @@ cd backend
 python app.py
 ```
 
-5. Open `frontend/index.html` in a browser.
+5. Open `frontend/index.html` in a browser. The frontend is now a React-based static app that calls the Flask API.
 
 ## Useful Endpoints
 
@@ -41,6 +41,16 @@ python app.py
 - `GET /agent-capabilities` - agent registry and integration overview
 - `GET /check-attendance` - scheduled attendance agent action
 - `GET /mentor/<mentor_id>/students` - mentor dashboard data
+
+## Frontend
+
+The frontend uses React with browser-loaded React scripts, plus CSS for styling. It does not require a build step yet.
+
+- `frontend/index.html` loads React and the app root.
+- `frontend/app.js` contains React components for voice input, agent display, responses, traces, and data cards.
+- `frontend/style.css` controls the visual design.
+
+When Node.js and npm are available, this can be upgraded to a Vite React app.
 
 ## Version Control
 

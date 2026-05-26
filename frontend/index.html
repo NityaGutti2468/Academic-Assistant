@@ -8,51 +8,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="overlay"></div>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <div class="orb"></div>
-                <h1>Nexia Assistant</h1>
-            </div>
-            <p>Your Voice-Active Multi-Agent ERP</p>
-        </header>
-
-        <main>
-            <div class="voice-interaction">
-                <div class="ai-visualizer" id="visualizer">
-                    <div class="ring r1"></div>
-                    <div class="ring r2"></div>
-                    <div class="ring r3"></div>
-                </div>
-                
-                <h2 id="status_text">Tap the microphone to speak</h2>
-                
-                <button id="mic_btn" class="mic-btn">
-                    <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                        <line x1="12" y1="19" x2="12" y2="22"></line>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="transcript-box">
-                <h3>You:</h3>
-                <p id="user_query" class="placeholder">Awaiting input...</p>
-            </div>
-
-            <div class="response-box" id="response_box">
-                <div class="agent-indicator">
-                    <span class="dot"></span>
-                    <span id="agent_name">Agent Context</span>
-                </div>
-                <h3 id="response_text">Ready to help you track your academics, attendance, and fees.</h3>
-                <div id="data_container" class="data-container"></div>
-            </div>
-        </main>
-    </div>
-
+    <div id="root"></div>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

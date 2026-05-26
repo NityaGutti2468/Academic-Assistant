@@ -1,64 +1,10 @@
-const micBtn = document.getElementById('mic_btn');
-const statusText = document.getElementById('status_text');
-const userQueryElement = document.getElementById('user_query');
-const responseTextElement = document.getElementById('response_text');
-const dataContainer = document.getElementById('data_container');
-const visualizer = document.getElementById('visualizer');
-const agentName = document.getElementById('agent_name');
+const { useMemo, useRef, useState } = React;
+const h = React.createElement;
 
-// Web Speech API setup
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+const API_BASE_URL = "http://127.0.0.1:5000";
 
-if (recognition) {
-    recognition.continuous = false;
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    micBtn.addEventListener('click', () => {
-        try {
-            recognition.start();
-        } catch (e) {
-            console.error('Speech recognition already started', e);
-        }
-    });
-
-    recognition.onstart = () => {
-        statusText.innerText = "Listening...";
-        micBtn.classList.add('active');
-        visualizer.classList.add('listening');
-        userQueryElement.innerText = "Listening...";
-        userQueryElement.classList.remove('placeholder');
-    };
-
-    recognition.onspeechend = () => {
-        recognition.stop();
-        micBtn.classList.remove('active');
-        visualizer.classList.remove('listening');
-        statusText.innerText = "Processing...";
-    };
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        userQueryElement.innerText = transcript;
-        sendQueryToBackend(transcript);
-    };
-
-    recognition.onerror = (event) => {
-        statusText.innerText = `Error: ${event.error}`;
-        micBtn.classList.remove('active');
-        visualizer.classList.remove('listening');
-    };
-
-} else {
-    statusText.innerText = "Speech Recognition API not supported in this browser.";
-    micBtn.disabled = true;
-}
-
-// Speak response via browser TTS (optional but nice)
 function speakResponse(text) {
-    if ('speechSynthesis' in window) {
+    if ("speechSynthesis" in window && text) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.0;
         utterance.pitch = 1.0;
@@ -66,55 +12,184 @@ function speakResponse(text) {
     }
 }
 
-async function sendQueryToBackend(query) {
-    responseTextElement.innerText = "Coordinator Agent is determining intent...";
-    agentName.innerText = "Coordinator Agent";
-    dataContainer.innerHTML = '';
-    
-    try {
-        const response = await fetch(`http://127.0.0.1:5000/voice-query?q=${encodeURIComponent(query)}`);
-        
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        
-        agentName.innerText = data.response.agent || "Coordinator Agent";
-        
-        statusText.innerText = "Tap the microphone to speak";
-        
-        const message = data.response.message;
-        responseTextElement.innerText = message;
-        speakResponse(message);
-
-        // Display additional data payload if it exists
-        if (data.response.trace) {
-            dataContainer.innerHTML += `<div class="data-card"><strong>Trace:</strong> ${data.response.trace.join(' -> ')}</div>`;
-        }
-
-        if (data.response.tool) {
-            dataContainer.innerHTML += `<div class="data-card"><strong>Tool:</strong> ${data.response.tool}</div>`;
-        }
-
-        if (data.response.data) {
-            let html = '';
-            if (Array.isArray(data.response.data)) {
-                data.response.data.forEach(item => {
-                    html += `<div class="data-card">${JSON.stringify(item)}</div>`;
-                });
-            } else {
-                for (const [key, value] of Object.entries(data.response.data)) {
-                    html += `<div class="data-card"><strong>${key}:</strong> ${value}</div>`;
-                }
-            }
-            dataContainer.innerHTML += html;
-        }
-
-    } catch (error) {
-        console.error('Error:', error);
-        responseTextElement.innerText = "Error connecting to the backend. Is the Flask server running?";
-        agentName.innerText = "System Error";
-        statusText.innerText = "Server Error";
-    }
+function MicIcon() {
+    return h(
+        "svg",
+        {
+            viewBox: "0 0 24 24",
+            width: 32,
+            height: 32,
+            stroke: "currentColor",
+            strokeWidth: 2,
+            fill: "none",
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            "aria-hidden": "true",
+        },
+        h("path", { d: "M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" }),
+        h("path", { d: "M19 10v2a7 7 0 0 1-14 0v-2" }),
+        h("line", { x1: 12, y1: 19, x2: 12, y2: 22 })
+    );
 }
+
+function AgentIndicator({ agent }) {
+    return h(
+        "div",
+        { className: "agent-indicator" },
+        h("span", { className: "dot" }),
+        h("span", null, agent || "Agent Context")
+    );
+}
+
+function DataCards({ response }) {
+    if (!response) {
+        return null;
+    }
+
+    const cards = [];
+
+    if (response.trace?.length) {
+        cards.push(h("div", { className: "data-card", key: "trace" }, h("strong", null, "Trace: "), response.trace.join(" -> ")));
+    }
+
+    if (response.tool) {
+        cards.push(h("div", { className: "data-card", key: "tool" }, h("strong", null, "Tool: "), response.tool));
+    }
+
+    if (Array.isArray(response.data)) {
+        response.data.forEach((item, index) => {
+            cards.push(h("div", { className: "data-card", key: `data-${index}` }, JSON.stringify(item)));
+        });
+    } else if (response.data && typeof response.data === "object") {
+        Object.entries(response.data).forEach(([key, value]) => {
+            cards.push(h("div", { className: "data-card", key }, h("strong", null, `${key}: `), String(value)));
+        });
+    }
+
+    return h("div", { className: "data-container" }, cards);
+}
+
+function VoiceAssistant() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = useMemo(() => {
+        if (!SpeechRecognition) {
+            return null;
+        }
+
+        const instance = new SpeechRecognition();
+        instance.continuous = false;
+        instance.lang = "en-US";
+        instance.interimResults = false;
+        instance.maxAlternatives = 1;
+        return instance;
+    }, [SpeechRecognition]);
+
+    const recognitionRef = useRef(recognition);
+    const [status, setStatus] = useState(recognition ? "Tap the microphone to speak" : "Speech Recognition API not supported in this browser.");
+    const [isListening, setIsListening] = useState(false);
+    const [query, setQuery] = useState("");
+    const [response, setResponse] = useState({
+        agent: "Agent Context",
+        message: "Ready to help you track your academics, attendance, and fees.",
+    });
+
+    async function sendQueryToBackend(nextQuery) {
+        setStatus("Processing...");
+        setResponse({
+            agent: "Coordinator Agent",
+            message: "Coordinator Agent is determining intent...",
+        });
+
+        try {
+            const result = await fetch(`${API_BASE_URL}/voice-query?q=${encodeURIComponent(nextQuery)}`);
+            if (!result.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const data = await result.json();
+            const agentResponse = data.response || {};
+            setResponse(agentResponse);
+            setStatus("Tap the microphone to speak");
+            speakResponse(agentResponse.message);
+        } catch (error) {
+            console.error("Error:", error);
+            setResponse({
+                agent: "System Error",
+                message: "Error connecting to the backend. Is the Flask server running?",
+            });
+            setStatus("Server Error");
+        }
+    }
+
+    function startListening() {
+        if (!recognitionRef.current) {
+            return;
+        }
+
+        recognitionRef.current.onstart = () => {
+            setStatus("Listening...");
+            setIsListening(true);
+            setQuery("Listening...");
+        };
+
+        recognitionRef.current.onspeechend = () => {
+            recognitionRef.current.stop();
+            setIsListening(false);
+            setStatus("Processing...");
+        };
+
+        recognitionRef.current.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            setQuery(transcript);
+            sendQueryToBackend(transcript);
+        };
+
+        recognitionRef.current.onerror = (event) => {
+            setStatus(`Error: ${event.error}`);
+            setIsListening(false);
+        };
+
+        try {
+            recognitionRef.current.start();
+        } catch (error) {
+            console.error("Speech recognition already started", error);
+        }
+    }
+
+    return h(
+        React.Fragment,
+        null,
+        h("div", { className: "overlay" }),
+        h(
+            "div",
+            { className: "container" },
+            h(
+                "header",
+                null,
+                h("div", { className: "logo" }, h("div", { className: "orb" }), h("h1", null, "Nexia Assistant")),
+                h("p", null, "Your Voice-Active Multi-Agent ERP")
+            ),
+            h(
+                "main",
+                null,
+                h(
+                    "section",
+                    { className: "voice-interaction" },
+                    h(
+                        "div",
+                        { className: `ai-visualizer ${isListening ? "listening" : ""}` },
+                        h("div", { className: "ring r1" }),
+                        h("div", { className: "ring r2" }),
+                        h("div", { className: "ring r3" })
+                    ),
+                    h("h2", null, status),
+                    h("button", { className: `mic-btn ${isListening ? "active" : ""}`, onClick: startListening, disabled: !recognition }, h(MicIcon))
+                ),
+                h("section", { className: "transcript-box" }, h("h3", null, "You:"), h("p", { className: query ? "" : "placeholder" }, query || "Awaiting input...")),
+                h("section", { className: "response-box" }, h(AgentIndicator, { agent: response.agent }), h("h3", null, response.message), h(DataCards, { response }))
+            )
+        )
+    );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(h(VoiceAssistant));
