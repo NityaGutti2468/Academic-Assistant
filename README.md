@@ -9,6 +9,7 @@ Nexia is an agentic AI academic assistant for attendance, marks, fees, mentor al
 - MongoDB provides database context, Flask provides API access, and project docs/manifests provide file-system context.
 - `backend/mcp_manifest.json` documents an MCP-style interface for tools and resources.
 - `backend/services/agent_registry.py` is the adapter point for LangChain, CrewAI, AutoGen, RAG, and n8n workflows.
+- `backend/services/llm_coordinator.py` adds an optional LLM Planner Agent with Groq or OpenAI.
 
 ## Run Locally
 
@@ -34,6 +35,26 @@ python app.py
 
 5. Open `frontend/index.html` in a browser. The frontend is now a React-based static app that calls the Flask API.
 
+## Optional LLM Agent Mode
+
+The app works without an API key using the rule-based coordinator. To enable the LLM-powered autonomous planner with Groq, add this to `.env`:
+
+```bash
+LLM_PROVIDER=groq
+LLM_MODEL=llama-3.3-70b-versatile
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+OpenAI is also supported:
+
+```bash
+LLM_PROVIDER=openai
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
+```
+
+When enabled, the Coordinator Agent asks the LLM Planner Agent to choose the best tool, executes that tool, then asks the LLM to summarize the tool result for the student.
+
 ## Useful Endpoints
 
 - `GET /` - backend health message
@@ -41,6 +62,18 @@ python app.py
 - `GET /agent-capabilities` - agent registry and integration overview
 - `GET /check-attendance` - scheduled attendance agent action
 - `GET /mentor/<mentor_id>/students` - mentor dashboard data
+
+## Database
+
+The MongoDB seed data includes richer academic profiles for realistic agent responses:
+
+- Student demographics, mentor assignment, parent contact, learning profile, and risk tags
+- Course catalog with credits, faculty, department, and semester
+- Attendance totals plus optional subject-level breakdown
+- Marks, SGPA, CGPA, credits earned, backlogs, and academic standing
+- Semester-wise result tables with course code, course name, grade, grade points, credits, result, SGPA, and percentage
+- Assignments, mentor notes, scholarships, fee payments, pending fees, and alert logs
+- Parent result notification messages are generated from the latest semester result table
 
 ## Frontend
 

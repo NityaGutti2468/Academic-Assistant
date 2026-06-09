@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexia - Mentor Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-shell">
+        <header class="dashboard-header">
+            <div>
+                <div class="logo left-logo">
+                    <div class="orb"></div>
+                    <h1>Nexia Mentor Dashboard</h1>
+                </div>
+                <p>Assigned students, academic status, attendance, fees, and alerts.</p>
+            </div>
+            <form id="mentor-form" class="mentor-form">
+                <input id="mentor-id" value="101" inputmode="numeric" aria-label="Mentor ID">
+                <button type="submit">Load</button>
+            </form>
+        </header>
+
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <span>Students</span>
+                <strong id="students-count">0</strong>
+            </div>
+            <div class="metric-card">
+                <span>Alerts</span>
+                <strong id="alerts-count">0</strong>
+            </div>
+            <div class="metric-card">
+                <span>Average CGPA</span>
+                <strong id="avg-cgpa">0.00</strong>
+            </div>
+        </section>
+
+        <main class="dashboard-grid">
+            <section class="dashboard-panel">
+                <div class="panel-title">
+                    <h2>Priority Alerts</h2>
+                    <span id="backend-state">Checking backend...</span>
+                </div>
+                <div id="alerts-list" class="list-stack"></div>
+            </section>
+
+            <section class="dashboard-panel">
+                <div class="panel-title">
+                    <h2>Student Portfolio</h2>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Attendance</th>
+                                <th>SGPA</th>
+                                <th>CGPA</th>
+                                <th>Backlogs</th>
+                                <th>Fees</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="mentor.js"></script>
+</body>
+</html>

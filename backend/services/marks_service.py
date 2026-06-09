@@ -1,4 +1,4 @@
-from database import marks, academic_summary, students
+from database import marks, academic_summary, semester_results, students
 from services.notification_service import send_sms
 
 
@@ -20,6 +20,7 @@ def get_academic_report(student_id):
 
     student_id = int(student_id)
     student_marks = list(marks.find({"student_id": student_id, "exam_type": "Final"}))
+    result_history = list(semester_results.find({"student_id": student_id}, {"_id": 0}).sort("semester_no", 1))
 
     highest_mark = -1
     lowest_mark = 101
@@ -75,6 +76,7 @@ def get_academic_report(student_id):
 
     return {
         "marks": student_marks,
+        "semester_results": result_history,
         "summary": summary,
         "status": status,
         "insights": {
@@ -94,6 +96,51 @@ def analyze_performance(summary):
 
 
 # ---------- NOTIFICATION ----------
+def _latest_semester_result(student_id):
+    return semester_results.find_one(
+        {"student_id": int(student_id)},
+        {"_id": 0},
+        sort=[("semester_no", -1)],
+    )
+
+
+def _build_semester_result_message(student, result):
+    name = student.get("name", "Student")
+    roll_no = student.get("roll_no", "N/A")
+    semester_label = result.get("semester_label", "Semester")
+    exam_month = result.get("exam_month", "Exam")
+
+    message = (
+        f"{semester_label} Result Released\n"
+        f"Student: {name}\n"
+        f"Roll No: {roll_no}\n"
+        f"Exam: {exam_month}\n\n"
+        "S.No Course Code Course Name Grade GP Credits Result\n"
+    )
+
+    for course in result.get("courses", []):
+        message += (
+            f"{course.get('s_no')}. "
+            f"{course.get('course_code')} "
+            f"{course.get('course_name')} "
+            f"{course.get('grade')} "
+            f"{course.get('grade_points')} "
+            f"{course.get('credits')} "
+            f"{course.get('result')}\n"
+        )
+
+    message += (
+        f"\n{semester_label} Summary "
+        f"Passed:{result.get('passed_count', 0)}, "
+        f"Failed:{result.get('failed_count', 0)} "
+        f"Result:{result.get('overall_result', 'N/A')} "
+        f"SGPA:{result.get('sgpa', 0):.2f}"
+        f"({result.get('total_grade_points', 0)}/{result.get('total_credits', 0)}) "
+        f"{result.get('percentage', 0):.2f}%"
+    )
+    return message
+
+
 def notify_marks(student_id):
 
     student_id = int(student_id)
@@ -102,6 +149,12 @@ def notify_marks(student_id):
 
     if not student:
         return
+
+    latest_result = _latest_semester_result(student_id)
+    if latest_result:
+        message = _build_semester_result_message(student, latest_result)
+        send_sms(student["parent_phone"], message)
+        return {"message": "Semester result notification sent", "data": latest_result}
 
     summary = report["summary"]
     marks_list = report["marks"]
@@ -132,3 +185,4 @@ def notify_marks(student_id):
     message += f"V Semester Summary Passed:{summary['passed_count']}, Failed:{summary['failed_count']} Result:{overall_res} SGPA:{sgpa:.2f}({pts}/{cds})    {perc:.2f}"
 
     send_sms(student["parent_phone"], message)
+    return {"message": "Marks notification sent", "data": summary}

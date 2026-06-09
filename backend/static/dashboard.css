@@ -1,0 +1,274 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: #111315;
+    color: #f7fbff;
+    font-family: "Outfit", Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    background: #52d6d3;
+    border: 0;
+    border-radius: 6px;
+    color: #071515;
+    cursor: pointer;
+    font-weight: 700;
+    min-height: 42px;
+    padding: 0 16px;
+}
+
+button.secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f7fbff;
+}
+
+input {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    color: #f7fbff;
+    outline: 0;
+    padding: 11px 12px;
+    width: 100%;
+}
+
+.shell {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    min-height: 100vh;
+}
+
+.sidebar {
+    background: #171a1d;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px;
+}
+
+.brand {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.brand-dot {
+    background: #52d6d3;
+    border-radius: 999px;
+    box-shadow: 0 0 18px rgba(82, 214, 211, 0.9);
+    display: block;
+    height: 16px;
+    width: 16px;
+}
+
+.brand h1,
+.brand p,
+.topbar h2,
+.topbar p,
+.panel h3,
+.panel h2 {
+    margin: 0;
+}
+
+.brand p,
+.topbar p,
+.metric span,
+.profile-card span,
+small {
+    color: rgba(247, 251, 255, 0.62);
+}
+
+.panel {
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    min-width: 0;
+    padding: 18px;
+}
+
+.login-card {
+    display: grid;
+    gap: 12px;
+}
+
+.login-card label {
+    color: rgba(247, 251, 255, 0.72);
+    display: grid;
+    gap: 6px;
+}
+
+.profile-card {
+    display: grid;
+    gap: 12px;
+}
+
+.profile-card strong {
+    font-size: 24px;
+}
+
+.content {
+    padding: 24px;
+}
+
+.topbar {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.topbar h2 {
+    font-size: 34px;
+}
+
+.state {
+    color: #ffb4b4;
+    white-space: nowrap;
+}
+
+.state.ok {
+    color: #99efb7;
+}
+
+.metrics {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 18px;
+}
+
+.metrics article {
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 18px;
+}
+
+.metrics span {
+    color: rgba(247, 251, 255, 0.62);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.metrics strong {
+    font-size: 32px;
+}
+
+.grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: 360px minmax(0, 1fr);
+}
+
+.admin-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 18px;
+}
+
+.panel-head {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.stack {
+    display: grid;
+    gap: 10px;
+}
+
+.alert {
+    background: rgba(255, 255, 255, 0.07);
+    border-left: 4px solid #ffbd59;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.alert.high {
+    border-left-color: #ff6961;
+}
+
+.alert div {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.alert p {
+    margin: 8px 0;
+}
+
+.alert span,
+.alert small,
+.empty {
+    color: rgba(247, 251, 255, 0.62);
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th,
+td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 10px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+th {
+    color: #52d6d3;
+    font-weight: 700;
+}
+
+.actions,
+.mini-form {
+    display: grid;
+    gap: 10px;
+}
+
+.error {
+    color: #ffb4b4;
+    margin: 0;
+    min-height: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 920px) {
+    .shell,
+    .grid,
+    .admin-grid,
+    .metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

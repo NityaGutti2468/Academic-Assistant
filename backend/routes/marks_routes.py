@@ -9,6 +9,7 @@ def get_marks(student_id):
     report = get_academic_report(student_id)
 
     # Send marks update to parent
-    notify_marks(student_id)
+    notification = notify_marks(student_id)
 
+    report["notification"] = notification
     return report

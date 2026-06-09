@@ -13,7 +13,13 @@
         "academic_summary",
         "fees",
         "alert_logs",
-        "mentors"
+        "mentors",
+        "courses",
+        "assignments",
+        "student_notes",
+        "scholarships",
+        "fee_payments",
+        "semester_results"
       ]
     },
     {

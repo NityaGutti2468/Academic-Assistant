@@ -10,6 +10,7 @@ This project is now organized as a multi-agent academic assistant. The current i
 - Databases, APIs, and file systems: MongoDB is the primary resource; Flask exposes API routes; docs and manifests provide file-system context.
 - Agentic AI frameworks: `backend/services/agent_registry.py` provides the adapter boundary for future LangChain, CrewAI, AutoGen, RAG, and n8n integrations.
 - Real-world project: the app monitors attendance, fees, marks, mentors, notifications, and voice queries.
+- LLM-powered planner: `backend/services/llm_coordinator.py` can select tools and summarize results when Groq or OpenAI API keys are configured.
 
 ## Next Upgrade Path
 

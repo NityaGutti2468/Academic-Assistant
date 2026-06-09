@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexia Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-dot"></span>
+                <div>
+                    <h1>Nexia</h1>
+                    <p>Academic dashboard</p>
+                </div>
+            </div>
+
+            <section id="login-card" class="panel login-card">
+                <h2>Sign in</h2>
+                <label>
+                    User ID
+                    <input id="user-id" value="101" autocomplete="username">
+                </label>
+                <label>
+                    Password
+                    <input id="password" value="mentor" type="password" autocomplete="current-password">
+                </label>
+                <button id="login-btn">Sign In</button>
+                <p id="login-error" class="error"></p>
+                <small>Mentor: 101 / mentor<br>Admin: admin / admin</small>
+            </section>
+
+            <section id="profile-card" class="panel profile-card hidden">
+                <span id="role-label"></span>
+                <strong id="profile-title"></strong>
+                <button id="logout-btn" class="secondary">Logout</button>
+            </section>
+        </aside>
+
+        <main class="content">
+            <header class="topbar">
+                <div>
+                    <p id="eyebrow">Flask Dashboard</p>
+                    <h2 id="page-title">Mentor Dashboard</h2>
+                </div>
+                <span id="backend-state" class="state">Checking backend...</span>
+            </header>
+
+            <section class="metrics">
+                <article>
+                    <span id="metric-one-label">Students</span>
+                    <strong id="metric-one">0</strong>
+                </article>
+                <article>
+                    <span id="metric-two-label">Alerts</span>
+                    <strong id="metric-two">0</strong>
+                </article>
+            </section>
+
+            <section id="mentor-view" class="grid">
+                <article class="panel">
+                    <div class="panel-head">
+                        <h3>Priority Alerts</h3>
+                    </div>
+                    <div id="alerts-list" class="stack"></div>
+                </article>
+
+                <article class="panel wide">
+                    <div class="panel-head">
+                        <h3>Student Portfolio</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Attendance</th>
+                                    <th>SGPA</th>
+                                    <th>CGPA</th>
+                                    <th>Backlogs</th>
+                                    <th>Fees</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mentor-students"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <section id="admin-view" class="hidden">
+                <div class="admin-grid">
+                    <article class="panel">
+                        <div class="panel-head">
+                            <h3>System Actions</h3>
+                        </div>
+                        <div class="actions">
+                            <button id="run-attendance">Run Attendance Checks</button>
+                            <button id="run-fees">Run Fee Reminders</button>
+                        </div>
+                        <p id="action-status"></p>
+                    </article>
+
+                    <article class="panel">
+                        <div class="panel-head">
+                            <h3>Assign Student</h3>
+                        </div>
+                        <form id="assign-form" class="mini-form">
+                            <input id="assign-student" placeholder="Student ID">
+                            <input id="assign-mentor" placeholder="Mentor ID">
+                            <button type="submit">Assign</button>
+                        </form>
+                        <p id="assign-status"></p>
+                    </article>
+                </div>
+
+                <article class="panel">
+                    <div class="panel-head">
+                        <h3>Master Student Database</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Mentor</th>
+                                    <th>Attendance</th>
+                                    <th>SGPA</th>
+                                    <th>CGPA</th>
+                                    <th>Fees</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-students"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

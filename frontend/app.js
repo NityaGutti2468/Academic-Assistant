@@ -1,4 +1,4 @@
-const { useMemo, useRef, useState } = React;
+const { useEffect, useMemo, useRef, useState } = React;
 const h = React.createElement;
 
 const API_BASE_URL = "http://127.0.0.1:5000";
@@ -56,6 +56,10 @@ function DataCards({ response }) {
         cards.push(h("div", { className: "data-card", key: "tool" }, h("strong", null, "Tool: "), response.tool));
     }
 
+    if (response.planner) {
+        cards.push(h("div", { className: "data-card", key: "planner" }, h("strong", null, "Planner: "), response.planner));
+    }
+
     if (Array.isArray(response.data)) {
         response.data.forEach((item, index) => {
             cards.push(h("div", { className: "data-card", key: `data-${index}` }, JSON.stringify(item)));
@@ -88,13 +92,37 @@ function VoiceAssistant() {
     const [status, setStatus] = useState(recognition ? "Tap the microphone to speak" : "Speech Recognition API not supported in this browser.");
     const [isListening, setIsListening] = useState(false);
     const [query, setQuery] = useState("");
+    const [manualQuery, setManualQuery] = useState("show my marks");
+    const [backendStatus, setBackendStatus] = useState("Checking backend...");
     const [response, setResponse] = useState({
         agent: "Agent Context",
         message: "Ready to help you track your academics, attendance, and fees.",
     });
 
+    useEffect(() => {
+        async function checkBackend() {
+            try {
+                const result = await fetch(`${API_BASE_URL}/`);
+                if (!result.ok) {
+                    throw new Error(`Backend returned ${result.status}`);
+                }
+                setBackendStatus("Backend connected");
+            } catch (error) {
+                setBackendStatus("Backend not connected");
+            }
+        }
+
+        checkBackend();
+    }, []);
+
     async function sendQueryToBackend(nextQuery) {
+        if (!nextQuery.trim()) {
+            setStatus("Enter a question first");
+            return;
+        }
+
         setStatus("Processing...");
+        setQuery(nextQuery);
         setResponse({
             agent: "Coordinator Agent",
             message: "Coordinator Agent is determining intent...",
@@ -109,16 +137,23 @@ function VoiceAssistant() {
             const data = await result.json();
             const agentResponse = data.response || {};
             setResponse(agentResponse);
+            setBackendStatus("Backend connected");
             setStatus("Tap the microphone to speak");
             speakResponse(agentResponse.message);
         } catch (error) {
             console.error("Error:", error);
+            setBackendStatus("Backend not connected");
             setResponse({
                 agent: "System Error",
-                message: "Error connecting to the backend. Is the Flask server running?",
+                message: `Error connecting to the backend at ${API_BASE_URL}. Keep Flask running, then try again.`,
             });
             setStatus("Server Error");
         }
+    }
+
+    function submitManualQuery(event) {
+        event.preventDefault();
+        sendQueryToBackend(manualQuery);
     }
 
     function startListening() {
@@ -167,7 +202,8 @@ function VoiceAssistant() {
                 "header",
                 null,
                 h("div", { className: "logo" }, h("div", { className: "orb" }), h("h1", null, "Nexia Assistant")),
-                h("p", null, "Your Voice-Active Multi-Agent ERP")
+                h("p", null, "Your Voice-Active Multi-Agent ERP"),
+                h("div", { className: backendStatus === "Backend connected" ? "backend-status connected" : "backend-status" }, backendStatus)
             ),
             h(
                 "main",
@@ -184,6 +220,16 @@ function VoiceAssistant() {
                     ),
                     h("h2", null, status),
                     h("button", { className: `mic-btn ${isListening ? "active" : ""}`, onClick: startListening, disabled: !recognition }, h(MicIcon))
+                ),
+                h(
+                    "form",
+                    { className: "query-form", onSubmit: submitManualQuery },
+                    h("input", {
+                        value: manualQuery,
+                        onChange: (event) => setManualQuery(event.target.value),
+                        placeholder: "Ask about marks, attendance, fees...",
+                    }),
+                    h("button", { type: "submit" }, "Ask")
                 ),
                 h("section", { className: "transcript-box" }, h("h3", null, "You:"), h("p", { className: query ? "" : "placeholder" }, query || "Awaiting input...")),
                 h("section", { className: "response-box" }, h(AgentIndicator, { agent: response.agent }), h("h3", null, response.message), h(DataCards, { response }))

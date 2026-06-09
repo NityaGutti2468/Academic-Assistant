@@ -1,5 +1,9 @@
 from database import attendance, students
-from services.notification_service import send_sms
+from services.notification_service import send_email, send_sms
+
+
+def get_notification_email(student):
+    return student.get("parent_email") or student.get("email") or student.get("college_email")
 
 def check_attendance():
 
@@ -10,6 +14,8 @@ def check_attendance():
         if r["percentage"] < 75:
 
             student = students.find_one({"student_id": r["student_id"]})
+            if not student:
+                continue
 
             message = f"""
 LOW ATTENDANCE ALERT
@@ -22,7 +28,12 @@ Minimum Required: 75%
 Please contact the mentor immediately.
 """
 
-            send_sms(student["parent_phone"], message)
+            send_sms(student.get("parent_phone"), message)
+            send_email(
+                get_notification_email(student),
+                "Low Attendance Alert",
+                message
+            )
 
             alerts.append({
                 "student_id": r["student_id"],
