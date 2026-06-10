@@ -5,7 +5,7 @@ Nexia is an agentic AI academic assistant for attendance, marks, fees, mentor al
 ## Agentic AI Alignment
 
 - Coordinator Agent routes every user query to the correct specialized agent.
-- Attendance, Academic, Fee, Mentor, Notification, and Voice agents handle domain tasks.
+- Attendance, Academic, Fee, Mentor, Notification, and Voice Agents handle domain tasks.
 - MongoDB provides database context, Flask provides API access, and project docs/manifests provide file-system context.
 - `backend/mcp_manifest.json` documents an MCP-style interface for tools and resources.
 - `backend/services/agent_registry.py` is the adapter point for LangChain, CrewAI, AutoGen, RAG, and n8n workflows.
