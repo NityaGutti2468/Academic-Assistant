@@ -1,7 +1,11 @@
-from flask import Flask
+from pathlib import Path
+import secrets
+
+from flask import Flask, redirect, send_from_directory
 from flask_cors import CORS
 import os
 
+from auth import auth_bp
 from routes.attendance_routes import attendance_bp
 from routes.marks_routes import marks_bp
 from routes.fees_routes import fees_bp
@@ -13,9 +17,18 @@ from routes.dashboard_routes import dashboard_bp
 from services.attendance_service import check_attendance
 from services.fees_service import check_fees
 
+FRONTEND_DIR = Path(__file__).resolve().parents[1] / "frontend"
+
 app = Flask(__name__)
+app.config.update(
+    SECRET_KEY=os.getenv("SECRET_KEY") or secrets.token_hex(32),
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=os.getenv("VERCEL") == "1",
+)
 CORS(app)
 
+app.register_blueprint(auth_bp)
 app.register_blueprint(attendance_bp)
 app.register_blueprint(marks_bp)
 app.register_blueprint(fees_bp)
@@ -27,7 +40,22 @@ app.register_blueprint(dashboard_bp)
 
 @app.route("/")
 def home():
-    return {"message": "Multi-Agent Academic System Running"}
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+
+@app.route("/mentor")
+def mentor_dashboard():
+    return redirect("/dashboard")
+
+
+@app.route("/frontend/<path:filename>")
+def frontend_asset(filename):
+    return send_from_directory(FRONTEND_DIR, filename)
+
+
+@app.route("/api/health")
+def health():
+    return {"status": "ok", "message": "Multi-Agent Academic System Running"}
 
 
 # -------- AGENTS --------

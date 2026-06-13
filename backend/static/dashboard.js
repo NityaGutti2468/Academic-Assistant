@@ -176,25 +176,25 @@ function showSession(role, userId) {
     refreshDashboard();
 }
 
-document.getElementById("login-btn").addEventListener("click", () => {
+document.getElementById("login-btn").addEventListener("click", async () => {
     const userId = userIdInput.value.trim();
     const password = passwordInput.value;
     loginError.textContent = "";
 
-    if (userId === "admin" && password === "admin") {
-        showSession("Admin", "admin");
-        return;
+    try {
+        const result = await getJson("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: userId, password }),
+        });
+        showSession(result.role, result.user_id);
+    } catch (error) {
+        loginError.textContent = "Invalid login or dashboard passwords are not configured.";
     }
-
-    if (/^\d+$/.test(userId) && password === "mentor") {
-        showSession("Mentor", userId);
-        return;
-    }
-
-    loginError.textContent = "Invalid login. Use 101/mentor or admin/admin.";
 });
 
-document.getElementById("logout-btn").addEventListener("click", () => {
+document.getElementById("logout-btn").addEventListener("click", async () => {
+    await fetch("/auth/logout", { method: "POST" });
     state.role = null;
     state.userId = null;
     loginCard.classList.remove("hidden");
@@ -229,4 +229,13 @@ document.getElementById("assign-form").addEventListener("submit", async (event) 
     await refreshDashboard();
 });
 
-setBackendStatus("Ready", true);
+async function restoreSession() {
+    try {
+        const result = await getJson("/auth/session");
+        showSession(result.role, result.user_id);
+    } catch (error) {
+        setBackendStatus("Ready", true);
+    }
+}
+
+restoreSession();

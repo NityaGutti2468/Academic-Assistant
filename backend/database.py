@@ -1,8 +1,17 @@
+import os
+
 from pymongo import MongoClient
 
-client = MongoClient("mongodb://localhost:27017")
 
-db = client["college_ai"]
+mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+mongo_db = os.getenv("MONGO_DB", "college_ai")
+
+client = MongoClient(
+    mongo_uri,
+    serverSelectionTimeoutMS=int(os.getenv("MONGO_TIMEOUT_MS", "5000")),
+)
+
+db = client[mongo_db]
 
 students = db["students"]
 attendance = db["attendance"]
@@ -17,5 +26,3 @@ student_notes = db["student_notes"]
 scholarships = db["scholarships"]
 fee_payments = db["fee_payments"]
 semester_results = db["semester_results"]
-
-print("MongoDB Connected")

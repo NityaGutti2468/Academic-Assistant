@@ -1,7 +1,7 @@
 const { useEffect, useMemo, useRef, useState } = React;
 const h = React.createElement;
 
-const API_BASE_URL = "http://127.0.0.1:5000";
+const API_BASE_URL = "";
 
 function speakResponse(text) {
     if ("speechSynthesis" in window && text) {
@@ -102,7 +102,7 @@ function VoiceAssistant() {
     useEffect(() => {
         async function checkBackend() {
             try {
-                const result = await fetch(`${API_BASE_URL}/`);
+                const result = await fetch(`${API_BASE_URL}/api/health`);
                 if (!result.ok) {
                     throw new Error(`Backend returned ${result.status}`);
                 }
@@ -145,7 +145,7 @@ function VoiceAssistant() {
             setBackendStatus("Backend not connected");
             setResponse({
                 agent: "System Error",
-                message: `Error connecting to the backend at ${API_BASE_URL}. Keep Flask running, then try again.`,
+                message: "Error connecting to the backend. Please try again shortly.",
             });
             setStatus("Server Error");
         }

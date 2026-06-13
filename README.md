@@ -29,11 +29,40 @@ python database/seed_db.py
 4. Start the Flask backend:
 
 ```bash
-cd backend
 python app.py
 ```
 
-5. Open `frontend/index.html` in a browser. The frontend is now a React-based static app that calls the Flask API.
+5. Open `http://127.0.0.1:5000`. The frontend and API are served by the same Flask application.
+
+The mentor and admin dashboard is available at `http://127.0.0.1:5000/dashboard`.
+
+## Deploy on Vercel
+
+The repository includes a root `app.py` WSGI entrypoint and root `requirements.txt`, so Vercel can detect and deploy the Flask application directly.
+
+1. Create a MongoDB Atlas database and allow connections from Vercel.
+2. Import this GitHub repository into Vercel.
+3. Add these Vercel environment variables:
+
+```bash
+MONGO_URI=mongodb+srv://...
+MONGO_DB=college_ai
+ENABLE_SCHEDULER=false
+SECRET_KEY=replace-with-a-long-random-value
+DASHBOARD_ADMIN_PASSWORD=replace-with-a-strong-password
+DASHBOARD_MENTOR_PASSWORD=replace-with-a-strong-password
+```
+
+4. Add optional Groq, OpenAI, Twilio, and SMTP variables only for the integrations you want to enable.
+5. Seed the Atlas database once from a trusted local machine:
+
+```bash
+python database/seed_db.py
+```
+
+Vercel functions are request-driven, so the in-process APScheduler must remain disabled there. Use Vercel Cron or another external scheduler for recurring attendance and fee checks.
+
+The included seed records are synthetic demo data. Do not place real student or parent information in a public deployment.
 
 ## Optional LLM Agent Mode
 
@@ -57,11 +86,13 @@ When enabled, the Coordinator Agent asks the LLM Planner Agent to choose the bes
 
 ## Useful Endpoints
 
-- `GET /` - backend health message
+- `GET /` - student assistant frontend
+- `GET /api/health` - backend health message
 - `GET /voice-query?q=show my attendance` - coordinator-driven query
 - `GET /agent-capabilities` - agent registry and integration overview
-- `GET /check-attendance` - scheduled attendance agent action
+- `POST /check-attendance` - authenticated attendance agent action
 - `GET /mentor/<mentor_id>/students` - mentor dashboard data
+- `POST /marks/<student_id>/notify` - send a result notification
 
 ## Database
 
@@ -77,9 +108,9 @@ The MongoDB seed data includes richer academic profiles for realistic agent resp
 
 ## Frontend
 
-The frontend uses React with browser-loaded React scripts, plus CSS for styling. It does not require a build step yet.
+The frontend uses React with browser-loaded React scripts, plus CSS for styling. It does not require a build step.
 
-- `frontend/index.html` loads React and the app root.
+- Flask serves `frontend/index.html` at `/` and frontend assets under `/frontend/`.
 - `frontend/app.js` contains React components for voice input, agent display, responses, traces, and data cards.
 - `frontend/style.css` controls the visual design.
 

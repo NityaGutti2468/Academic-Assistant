@@ -1,10 +1,14 @@
 from datetime import datetime, timedelta
+import os
 
+from dotenv import load_dotenv
 from pymongo import MongoClient
 
 
-client = MongoClient("mongodb://localhost:27017")
-db = client["college_ai"]
+load_dotenv()
+
+client = MongoClient(os.getenv("MONGO_URI", "mongodb://localhost:27017"))
+db = client[os.getenv("MONGO_DB", "college_ai")]
 
 
 def seed_database():
@@ -61,7 +65,7 @@ def seed_database():
             "student_id": 1,
             "admission_no": "105/AIM/2023",
             "roll_no": "23A81A6120",
-            "name": "Gutti N D Siva Naga Lakshmi Durga",
+            "name": "Ananya Rao",
             "department": "Artificial Intelligence and Machine Learning",
             "program": "B.Tech",
             "course": "B.Tech",
@@ -78,33 +82,33 @@ def seed_database():
             "last_studied": "Vasavi Vignan Junior College",
             "joining_date": "2023-08-28",
             "email": "student6120@college.edu",
-            "college_email": "23A81A6120@sves.org.in",
-            "phone": "+916302505590",
-            "abc_id": "341066381362",
-            "bank_account_no": "XXXXXX2292",
-            "aadhaar_no": "XXXX-XXXX-9911",
+            "college_email": "23a81a6120@college.edu",
+            "phone": "+919000000001",
+            "abc_id": "DEMO-ABC-0001",
+            "bank_account_no": "XXXXXX0001",
+            "aadhaar_no": "XXXX-XXXX-0001",
             "reimbursement": "Yes",
-            "transport_halt": "Siddantham",
-            "parent_name": "Gutti Ramakrishna",
-            "parent_phone": "+919876543210",
+            "transport_halt": "Campus",
+            "parent_name": "Ravi Rao",
+            "parent_phone": "+919100000001",
             "parent_details": {
-                "father_name": "Gutti Ramakrishna",
-                "father_occupation": "Farmer",
-                "father_mobile": "+918328224313",
-                "mother_name": "Gutti Krishna Veni",
-                "mother_occupation": "House Wife",
-                "mother_mobile": "+916300717696",
-                "annual_income": 72000,
-                "correspondence_address": "Penugonda, West Godavari, Andhra Pradesh",
-                "permanent_address": "Penugonda, West Godavari, Andhra Pradesh",
+                "father_name": "Ravi Rao",
+                "father_occupation": "Private Employee",
+                "father_mobile": "+919100000001",
+                "mother_name": "Meera Rao",
+                "mother_occupation": "Homemaker",
+                "mother_mobile": "+919100000002",
+                "annual_income": 180000,
+                "correspondence_address": "Demo Address, Andhra Pradesh",
+                "permanent_address": "Demo Address, Andhra Pradesh",
             },
             "education_details": [
                 {
                     "qualification": "S.S.C",
                     "board": "Board of Secondary Education",
-                    "hall_ticket_no": "2110107463",
+                    "hall_ticket_no": "DEMO-SSC-001",
                     "year_of_pass": 2021,
-                    "institute": "ZPP High School",
+                    "institute": "Demo High School",
                     "max_marks": 600,
                     "obtained_marks": 553,
                     "percentage": 92.17,
@@ -112,15 +116,15 @@ def seed_database():
                 {
                     "qualification": "Inter",
                     "board": "Board of Intermediate Education",
-                    "hall_ticket_no": "2304241448",
+                    "hall_ticket_no": "DEMO-INT-001",
                     "year_of_pass": 2023,
-                    "institute": "Vasavi Vignan Junior College",
+                    "institute": "Demo Junior College",
                     "max_marks": 1000,
                     "obtained_marks": 969,
                     "percentage": 96.90,
                 },
             ],
-            "address": "Penugonda, Andhra Pradesh",
+            "address": "Demo Address, Andhra Pradesh",
             "admission_year": 2023,
             "mentor_id": 101,
             "status": "active",
